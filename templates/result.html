@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="text-center">
+    <h2>Your Score: {{ score }}%</h2>
+    <div class="mt-4">
+        <canvas id="resultsChart"></canvas>
+    </div>
+    <div class="mt-4">
+        {% for question, user_answer in zip(questions[:total_answered], user_answers) %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{ question.question }}</h5>
+                <p>Your answer: {{ user_answer if question.type == 'single' else user_answer|join(', ') }}</p>
+                <p>Correct answer: {{ question.answer if question.type == 'single' else question.answer|join(', ') }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <a class="btn btn-primary" href="{{ url_for('index') }}">Back to Home</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var ctx = document.getElementById('resultsChart').getContext('2d');
+    var resultsChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Correct', 'Incorrect'],
+            datasets: [{
+                data: [{{ score }}, {{ 100 - score }}],
+                backgroundColor: ['#4caf50', '#f44336']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+</script>
+{% endblock %}
